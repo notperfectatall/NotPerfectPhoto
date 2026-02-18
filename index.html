@@ -3,64 +3,95 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🖼️ Photo Studio Pro</title>
+    <title>NotPerfectPhoto 🖼️</title>
     <link rel="stylesheet" href="style.css">
-    <!-- Libraries -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.4.5/dist/browser.js"></script>
 </head>
 <body>
-    <div class="app">
-        <header>
-            <h1>🖼️ Photo Studio Pro</h1>
-            <p>Resize • Background Remove/Add • Merge • PDF • DPI Change</p>
-        </header>
 
-        <!-- TAB NAVIGATION -->
-        <nav class="tabs">
-            <button class="tab-btn active" onclick="showTab('resize')">📐 Resize</button>
-            <button class="tab-btn" onclick="showTab('bg-remove')">✂️ BG Remove</button>
-            <button class="tab-btn" onclick="showTab('bg-add')">🎨 BG Add</button>
-            <button class="tab-btn" onclick="showTab('merge')">🔗 Merge</button>
-            <button class="tab-btn" onclick="showTab('pdf')">📄 PDF</button>
-            <button class="tab-btn" onclick="showTab('dpi')">🔍 DPI Change</button>
-        </nav>
+    <!-- HERO HEADER -->
+    <header class="hero">
+        <div class="hero-glow"></div>
+        <div class="hero-content">
+            <div class="logo-wrap">
+                <span class="logo-icon">📸</span>
+                <h1 class="logo-text">NotPerfect<span>Photo</span></h1>
+            </div>
+            <p class="tagline">Resize • BG Remove/Add • Merge • PDF • DPI — all free, all browser-based</p>
+        </div>
+    </header>
 
-        <!-- ===== RESIZE TAB ===== -->
+    <!-- TAB NAVIGATION -->
+    <nav class="tabs" id="mainTabs">
+        <button class="tab-btn active" onclick="showTab('resize', this)">📐 Resize</button>
+        <button class="tab-btn" onclick="showTab('bg-remove', this)">✂️ BG Remove</button>
+        <button class="tab-btn" onclick="showTab('bg-add', this)">🎨 BG Add</button>
+        <button class="tab-btn" onclick="showTab('merge', this)">🔗 Merge</button>
+        <button class="tab-btn" onclick="showTab('pdf', this)">📄 PDF</button>
+        <button class="tab-btn" onclick="showTab('dpi', this)">🔍 DPI</button>
+    </nav>
+
+    <main class="main-content">
+
+        <!-- ===== RESIZE ===== -->
         <div id="tab-resize" class="tab-content active">
             <div class="card">
-                <h2>📐 Photo Resize (Custom KB Size)</h2>
+                <div class="card-header">
+                    <span class="card-icon">📐</span>
+                    <div>
+                        <h2>Photo Resize</h2>
+                        <p>Compress to your exact target KB size</p>
+                    </div>
+                </div>
                 <div class="upload-area" onclick="document.getElementById('resizeInput').click()">
-                    <p>📁 Click to Upload Photo</p>
+                    <div class="upload-icon">📁</div>
+                    <p>Click to upload photo</p>
+                    <span>JPG, PNG, WebP supported</span>
                     <input type="file" id="resizeInput" accept="image/*" onchange="loadResizeImage(event)" hidden>
                 </div>
                 <div id="resizePreview" class="preview-box" style="display:none">
                     <img id="resizeImg" alt="Preview">
                 </div>
                 <div class="controls">
-                    <label>Target Size:</label>
-                    <input type="number" id="resizeKB" placeholder="e.g. 50" min="1"> <span>KB</span>
-                    <select id="resizeFormat">
-                        <option value="jpeg">JPEG</option>
-                        <option value="png">PNG</option>
-                        <option value="webp">WebP</option>
-                    </select>
+                    <div class="input-group">
+                        <label>Target Size</label>
+                        <div class="input-row">
+                            <input type="number" id="resizeKB" placeholder="e.g. 50" min="1">
+                            <span class="unit-badge">KB</span>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>Format</label>
+                        <select id="resizeFormat">
+                            <option value="jpeg">JPEG</option>
+                            <option value="png">PNG</option>
+                            <option value="webp">WebP</option>
+                        </select>
+                    </div>
                     <button class="btn primary" onclick="resizeToKB()">⬇️ Download</button>
                 </div>
                 <p id="resizeStatus" class="status"></p>
             </div>
         </div>
 
-        <!-- ===== BG REMOVE TAB ===== -->
+        <!-- ===== BG REMOVE ===== -->
         <div id="tab-bg-remove" class="tab-content">
             <div class="card">
-                <h2>✂️ Background Remove</h2>
+                <div class="card-header">
+                    <span class="card-icon">✂️</span>
+                    <div>
+                        <h2>Background Remove</h2>
+                        <p>AI-powered, runs fully in your browser</p>
+                    </div>
+                </div>
                 <div class="upload-area" onclick="document.getElementById('bgRemoveInput').click()">
-                    <p>📁 Click to Upload Photo</p>
+                    <div class="upload-icon">📁</div>
+                    <p>Click to upload photo</p>
+                    <span>Best with clear subjects</span>
                     <input type="file" id="bgRemoveInput" accept="image/*" onchange="loadBgRemoveImage(event)" hidden>
                 </div>
-                <div id="bgRemovePreview" class="preview-box" style="display:none">
+                <div id="bgRemovePreview" class="preview-box checker" style="display:none">
                     <img id="bgRemovedImg" alt="BG Removed">
                 </div>
                 <div class="controls">
@@ -71,19 +102,29 @@
             </div>
         </div>
 
-        <!-- ===== BG ADD TAB ===== -->
+        <!-- ===== BG ADD ===== -->
         <div id="tab-bg-add" class="tab-content">
             <div class="card">
-                <h2>🎨 Background Add (Unlimited Colors / Image)</h2>
+                <div class="card-header">
+                    <span class="card-icon">🎨</span>
+                    <div>
+                        <h2>Background Add</h2>
+                        <p>Any color or custom image background</p>
+                    </div>
+                </div>
                 <div class="upload-area" onclick="document.getElementById('bgAddInput').click()">
-                    <p>📁 Upload PNG (transparent background preferred)</p>
+                    <div class="upload-icon">📁</div>
+                    <p>Upload foreground photo (PNG preferred)</p>
+                    <span>Transparent PNG gives best results</span>
                     <input type="file" id="bgAddInput" accept="image/*" onchange="loadBgAddImage(event)" hidden>
                 </div>
                 <div class="controls">
-                    <label>Choose Background:</label>
-                    <input type="color" id="bgColor" value="#ffffff" title="Pick any color">
-                    <span>or</span>
-                    <button class="btn" onclick="document.getElementById('bgImageInput').click()">🖼️ Use BG Image</button>
+                    <div class="input-group">
+                        <label>Background Color</label>
+                        <input type="color" id="bgColor" value="#6d28d9" onchange="applyBackground()">
+                    </div>
+                    <span class="or-divider">or</span>
+                    <button class="btn" onclick="document.getElementById('bgImageInput').click()">🖼️ Use Image as BG</button>
                     <input type="file" id="bgImageInput" accept="image/*" onchange="loadBgImage(event)" hidden>
                 </div>
                 <div id="bgAddPreview" class="preview-box" style="display:none">
@@ -96,84 +137,163 @@
             </div>
         </div>
 
-        <!-- ===== MERGE TAB ===== -->
+        <!-- ===== MERGE ===== -->
         <div id="tab-merge" class="tab-content">
             <div class="card">
-                <h2>🔗 Photo Merge</h2>
-                <div class="upload-area" onclick="document.getElementById('merge1Input').click()">
-                    <p>📁 Upload Photo 1</p>
-                    <input type="file" id="merge1Input" accept="image/*" onchange="loadMerge1(event)" hidden>
+                <div class="card-header">
+                    <span class="card-icon">🔗</span>
+                    <div>
+                        <h2>Merge Photos</h2>
+                        <p>Horizontal, Vertical or Overlay merge</p>
+                    </div>
                 </div>
-                <img id="mergeImg1" style="display:none; max-height:150px; margin:8px 0;" alt="Photo 1">
-                <div class="upload-area" onclick="document.getElementById('merge2Input').click()">
-                    <p>📁 Upload Photo 2</p>
-                    <input type="file" id="merge2Input" accept="image/*" onchange="loadMerge2(event)" hidden>
+                <div class="merge-uploads">
+                    <div>
+                        <div class="upload-area small" onclick="document.getElementById('merge1Input').click()">
+                            <div class="upload-icon">📷</div>
+                            <p>Photo 1</p>
+                            <input type="file" id="merge1Input" accept="image/*" onchange="loadMerge1(event)" hidden>
+                        </div>
+                        <img id="mergeImg1" class="merge-thumb" style="display:none" alt="Photo 1">
+                    </div>
+                    <div class="merge-plus">+</div>
+                    <div>
+                        <div class="upload-area small" onclick="document.getElementById('merge2Input').click()">
+                            <div class="upload-icon">📷</div>
+                            <p>Photo 2</p>
+                            <input type="file" id="merge2Input" accept="image/*" onchange="loadMerge2(event)" hidden>
+                        </div>
+                        <img id="mergeImg2" class="merge-thumb" style="display:none" alt="Photo 2">
+                    </div>
                 </div>
-                <img id="mergeImg2" style="display:none; max-height:150px; margin:8px 0;" alt="Photo 2">
-                <div class="controls" style="flex-wrap:wrap; gap:10px;">
-                    <button class="btn primary" onclick="mergeImages('horizontal')">↔️ Horizontal Merge</button>
-                    <button class="btn primary" onclick="mergeImages('vertical')">↕️ Vertical Merge</button>
-                    <button class="btn primary" onclick="mergeImages('parallel')">🔀 Parallel (Overlay) Merge</button>
+                <div class="merge-btns">
+                    <button class="btn primary" onclick="mergeImages('horizontal')">↔️ Horizontal</button>
+                    <button class="btn primary" onclick="mergeImages('vertical')">↕️ Vertical</button>
+                    <button class="btn primary" onclick="mergeImages('parallel')">🔀 Overlay</button>
+                </div>
+                <div class="controls" style="margin-top:12px">
+                    <div class="input-group">
+                        <label>Overlay Opacity</label>
+                        <div class="input-row">
+                            <input type="range" id="overlayOpacity" min="0" max="1" step="0.05" value="0.6" oninput="document.getElementById('opacityVal').textContent=this.value">
+                            <span class="unit-badge" id="opacityVal">0.6</span>
+                        </div>
+                    </div>
                 </div>
                 <div id="mergePreview" class="preview-box" style="display:none">
                     <canvas id="mergeCanvas"></canvas>
                 </div>
                 <div class="controls">
-                    <label>Overlay Opacity (Parallel):</label>
-                    <input type="range" id="overlayOpacity" min="0" max="1" step="0.1" value="0.6">
-                    <span id="opacityVal">0.6</span>
-                    <button class="btn success" id="mergeDownload" style="display:none" onclick="downloadMerge()">⬇️ Download</button>
+                    <button class="btn success" id="mergeDownload" style="display:none" onclick="downloadMerge()">⬇️ Download Merged</button>
                 </div>
             </div>
         </div>
 
-        <!-- ===== PDF TAB ===== -->
+        <!-- ===== PDF ===== -->
         <div id="tab-pdf" class="tab-content">
             <div class="card">
-                <h2>📄 Photo to PDF (Custom KB Size)</h2>
+                <div class="card-header">
+                    <span class="card-icon">📄</span>
+                    <div>
+                        <h2>Photo to PDF</h2>
+                        <p>Multiple photos, custom KB target size</p>
+                    </div>
+                </div>
                 <div class="upload-area" onclick="document.getElementById('pdfInput').click()">
-                    <p>📁 Upload Photo(s) — Multiple Select OK</p>
+                    <div class="upload-icon">📁</div>
+                    <p>Click to upload photos</p>
+                    <span>Multiple selection allowed</span>
                     <input type="file" id="pdfInput" accept="image/*" multiple onchange="loadPdfImages(event)" hidden>
                 </div>
-                <div id="pdfPreviewList" class="preview-box" style="display:none; flex-wrap:wrap; gap:10px;"></div>
+                <div id="pdfPreviewList" class="pdf-preview-list" style="display:none"></div>
                 <div class="controls">
-                    <label>Target PDF Size:</label>
-                    <input type="number" id="pdfKB" placeholder="e.g. 100" min="1"> <span>KB</span>
-                    <select id="pdfOrientation">
-                        <option value="portrait">Portrait</option>
-                        <option value="landscape">Landscape</option>
-                    </select>
+                    <div class="input-group">
+                        <label>Target PDF Size</label>
+                        <div class="input-row">
+                            <input type="number" id="pdfKB" placeholder="e.g. 100" min="1">
+                            <span class="unit-badge">KB</span>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>Orientation</label>
+                        <select id="pdfOrientation">
+                            <option value="portrait">Portrait</option>
+                            <option value="landscape">Landscape</option>
+                        </select>
+                    </div>
                     <button class="btn primary" onclick="convertToPDF()">📄 Create PDF</button>
                 </div>
                 <p id="pdfStatus" class="status"></p>
             </div>
         </div>
 
-        <!-- ===== DPI TAB ===== -->
+        <!-- ===== DPI ===== -->
         <div id="tab-dpi" class="tab-content">
             <div class="card">
-                <h2>🔍 DPI Change</h2>
+                <div class="card-header">
+                    <span class="card-icon">🔍</span>
+                    <div>
+                        <h2>Change DPI</h2>
+                        <p>Set custom DPI with real metadata embed</p>
+                    </div>
+                </div>
                 <div class="upload-area" onclick="document.getElementById('dpiInput').click()">
-                    <p>📁 Click to Upload Photo</p>
+                    <div class="upload-icon">📁</div>
+                    <p>Click to upload photo</p>
+                    <span>PNG / JPEG supported</span>
                     <input type="file" id="dpiInput" accept="image/*" onchange="loadDpiImage(event)" hidden>
                 </div>
                 <div id="dpiPreview" class="preview-box" style="display:none">
                     <img id="dpiImg" alt="DPI Preview">
                 </div>
                 <div class="controls">
-                    <label>Set DPI:</label>
-                    <input type="number" id="dpiValue" placeholder="e.g. 300" min="72" max="1200" value="300">
-                    <select id="dpiFormat">
-                        <option value="image/jpeg">JPEG</option>
-                        <option value="image/png">PNG</option>
-                    </select>
-                    <button class="btn primary" onclick="changeDPI()">🔍 Apply DPI & Download</button>
+                    <div class="input-group">
+                        <label>Target DPI</label>
+                        <div class="input-row">
+                            <input type="number" id="dpiValue" placeholder="e.g. 300" min="72" max="1200" value="300">
+                            <span class="unit-badge">DPI</span>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>Format</label>
+                        <select id="dpiFormat">
+                            <option value="image/png">PNG</option>
+                            <option value="image/jpeg">JPEG</option>
+                        </select>
+                    </div>
+                    <button class="btn primary" onclick="changeDPI()">🔍 Apply & Download</button>
                 </div>
                 <p id="dpiStatus" class="status"></p>
             </div>
         </div>
 
-    </div>
+    </main>
+
+    <!-- ===== FOOTER / SUPPORT ===== -->
+    <footer class="footer">
+        <div class="footer-inner">
+            <div class="support-title">
+                <span class="heart">♥</span> Support NotPerfectAtAll
+            </div>
+            <p class="support-sub">Music, art & more — follow us on your favourite platform</p>
+            <div class="social-links">
+                <a href="https://www.youtube.com/@NotPerfectAtAll" target="_blank" class="social-btn youtube">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                    YouTube
+                </a>
+                <a href="https://www.instagram.com/notperfectatallmusic" target="_blank" class="social-btn instagram">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/></svg>
+                    Instagram
+                </a>
+                <a href="https://open.spotify.com/artist/6EwWmW8EOICO5T3swdgxuL" target="_blank" class="social-btn spotify">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
+                    Spotify
+                </a>
+            </div>
+            <p class="footer-copy">© 2026 NotPerfectPhoto • Made with 💜 for everyone</p>
+        </div>
+    </footer>
+
     <script src="app.js"></script>
 </body>
 </html>
