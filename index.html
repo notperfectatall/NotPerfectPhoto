@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🖼️ Photo Studio Pro</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.4.5/dist/browser.js"></script>
+</head>
+<body>
+    <div class="app">
+        <header>
+            <h1>🖼️ Photo Studio Pro</h1>
+            <p>Resize • Background Remove/Add • Merge • PDF • DPI Change</p>
+        </header>
+
+        <!-- TAB NAVIGATION -->
+        <nav class="tabs">
+            <button class="tab-btn active" onclick="showTab('resize')">📐 Resize</button>
+            <button class="tab-btn" onclick="showTab('bg-remove')">✂️ BG Remove</button>
+            <button class="tab-btn" onclick="showTab('bg-add')">🎨 BG Add</button>
+            <button class="tab-btn" onclick="showTab('merge')">🔗 Merge</button>
+            <button class="tab-btn" onclick="showTab('pdf')">📄 PDF</button>
+            <button class="tab-btn" onclick="showTab('dpi')">🔍 DPI Change</button>
+        </nav>
+
+        <!-- ===== RESIZE TAB ===== -->
+        <div id="tab-resize" class="tab-content active">
+            <div class="card">
+                <h2>📐 Photo Resize (Custom KB Size)</h2>
+                <div class="upload-area" onclick="document.getElementById('resizeInput').click()">
+                    <p>📁 Click to Upload Photo</p>
+                    <input type="file" id="resizeInput" accept="image/*" onchange="loadResizeImage(event)" hidden>
+                </div>
+                <div id="resizePreview" class="preview-box" style="display:none">
+                    <img id="resizeImg" alt="Preview">
+                </div>
+                <div class="controls">
+                    <label>Target Size:</label>
+                    <input type="number" id="resizeKB" placeholder="e.g. 50" min="1"> <span>KB</span>
+                    <select id="resizeFormat">
+                        <option value="jpeg">JPEG</option>
+                        <option value="png">PNG</option>
+                        <option value="webp">WebP</option>
+                    </select>
+                    <button class="btn primary" onclick="resizeToKB()">⬇️ Download</button>
+                </div>
+                <p id="resizeStatus" class="status"></p>
+            </div>
+        </div>
+
+        <!-- ===== BG REMOVE TAB ===== -->
+        <div id="tab-bg-remove" class="tab-content">
+            <div class="card">
+                <h2>✂️ Background Remove</h2>
+                <div class="upload-area" onclick="document.getElementById('bgRemoveInput').click()">
+                    <p>📁 Click to Upload Photo</p>
+                    <input type="file" id="bgRemoveInput" accept="image/*" onchange="loadBgRemoveImage(event)" hidden>
+                </div>
+                <div id="bgRemovePreview" class="preview-box" style="display:none">
+                    <img id="bgRemovedImg" alt="BG Removed">
+                </div>
+                <div class="controls">
+                    <button class="btn primary" onclick="removeBackground()">✂️ Remove Background</button>
+                    <button class="btn success" id="bgRemoveDownload" style="display:none" onclick="downloadBgRemoved()">⬇️ Download PNG</button>
+                </div>
+                <p id="bgRemoveStatus" class="status"></p>
+            </div>
+        </div>
+
+        <!-- ===== BG ADD TAB ===== -->
+        <div id="tab-bg-add" class="tab-content">
+            <div class="card">
+                <h2>🎨 Background Add (Unlimited Colors / Image)</h2>
+                <div class="upload-area" onclick="document.getElementById('bgAddInput').click()">
+                    <p>📁 Upload PNG (transparent background preferred)</p>
+                    <input type="file" id="bgAddInput" accept="image/*" onchange="loadBgAddImage(event)" hidden>
+                </div>
+                <div class="controls">
+                    <label>Choose Background:</label>
+                    <input type="color" id="bgColor" value="#ffffff" title="Pick any color">
+                    <span>or</span>
+                    <button class="btn" onclick="document.getElementById('bgImageInput').click()">🖼️ Use BG Image</button>
+                    <input type="file" id="bgImageInput" accept="image/*" onchange="loadBgImage(event)" hidden>
+                </div>
+                <div id="bgAddPreview" class="preview-box" style="display:none">
+                    <canvas id="bgAddCanvas"></canvas>
+                </div>
+                <div class="controls">
+                    <button class="btn primary" onclick="applyBackground()">🎨 Apply Background</button>
+                    <button class="btn success" id="bgAddDownload" style="display:none" onclick="downloadBgAdded()">⬇️ Download</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== MERGE TAB ===== -->
+        <div id="tab-merge" class="tab-content">
+            <div class="card">
+                <h2>🔗 Photo Merge</h2>
+                <div class="upload-area" onclick="document.getElementById('merge1Input').click()">
+                    <p>📁 Upload Photo 1</p>
+                    <input type="file" id="merge1Input" accept="image/*" onchange="loadMerge1(event)" hidden>
+                </div>
+                <img id="mergeImg1" style="display:none; max-height:150px; margin:8px 0;" alt="Photo 1">
+                <div class="upload-area" onclick="document.getElementById('merge2Input').click()">
+                    <p>📁 Upload Photo 2</p>
+                    <input type="file" id="merge2Input" accept="image/*" onchange="loadMerge2(event)" hidden>
+                </div>
+                <img id="mergeImg2" style="display:none; max-height:150px; margin:8px 0;" alt="Photo 2">
+                <div class="controls" style="flex-wrap:wrap; gap:10px;">
+                    <button class="btn primary" onclick="mergeImages('horizontal')">↔️ Horizontal Merge</button>
+                    <button class="btn primary" onclick="mergeImages('vertical')">↕️ Vertical Merge</button>
+                    <button class="btn primary" onclick="mergeImages('parallel')">🔀 Parallel (Overlay) Merge</button>
+                </div>
+                <div id="mergePreview" class="preview-box" style="display:none">
+                    <canvas id="mergeCanvas"></canvas>
+                </div>
+                <div class="controls">
+                    <label>Overlay Opacity (Parallel):</label>
+                    <input type="range" id="overlayOpacity" min="0" max="1" step="0.1" value="0.6">
+                    <span id="opacityVal">0.6</span>
+                    <button class="btn success" id="mergeDownload" style="display:none" onclick="downloadMerge()">⬇️ Download</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== PDF TAB ===== -->
+        <div id="tab-pdf" class="tab-content">
+            <div class="card">
+                <h2>📄 Photo to PDF (Custom KB Size)</h2>
+                <div class="upload-area" onclick="document.getElementById('pdfInput').click()">
+                    <p>📁 Upload Photo(s) — Multiple Select OK</p>
+                    <input type="file" id="pdfInput" accept="image/*" multiple onchange="loadPdfImages(event)" hidden>
+                </div>
+                <div id="pdfPreviewList" class="preview-box" style="display:none; flex-wrap:wrap; gap:10px;"></div>
+                <div class="controls">
+                    <label>Target PDF Size:</label>
+                    <input type="number" id="pdfKB" placeholder="e.g. 100" min="1"> <span>KB</span>
+                    <select id="pdfOrientation">
+                        <option value="portrait">Portrait</option>
+                        <option value="landscape">Landscape</option>
+                    </select>
+                    <button class="btn primary" onclick="convertToPDF()">📄 Create PDF</button>
+                </div>
+                <p id="pdfStatus" class="status"></p>
+            </div>
+        </div>
+
+        <!-- ===== DPI TAB ===== -->
+        <div id="tab-dpi" class="tab-content">
+            <div class="card">
+                <h2>🔍 DPI Change</h2>
+                <div class="upload-area" onclick="document.getElementById('dpiInput').click()">
+                    <p>📁 Click to Upload Photo</p>
+                    <input type="file" id="dpiInput" accept="image/*" onchange="loadDpiImage(event)" hidden>
+                </div>
+                <div id="dpiPreview" class="preview-box" style="display:none">
+                    <img id="dpiImg" alt="DPI Preview">
+                </div>
+                <div class="controls">
+                    <label>Set DPI:</label>
+                    <input type="number" id="dpiValue" placeholder="e.g. 300" min="72" max="1200" value="300">
+                    <select id="dpiFormat">
+                        <option value="image/jpeg">JPEG</option>
+                        <option value="image/png">PNG</option>
+                    </select>
+                    <button class="btn primary" onclick="changeDPI()">🔍 Apply DPI & Download</button>
+                </div>
+                <p id="dpiStatus" class="status"></p>
+            </div>
+        </div>
+
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
